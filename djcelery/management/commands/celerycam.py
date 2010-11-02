@@ -1,19 +1,21 @@
 """
 
-Curses Celery Event Viewer.
+Django Celery Event Metadata persister.
 
 """
-from celery.bin.celeryev import run_celeryev, OPTION_LIST
+from celery.bin import celeryev
 
 from djcelery.management.base import CeleryCommand
 
+camera = celeryev.EvCommand()
+
 
 class Command(CeleryCommand):
-    """Run the celery curses event viewer."""
-    option_list = CeleryCommand.option_list + OPTION_LIST
+    """Run the celery djcelery event metadata persister."""
     help = 'Takes snapshots of the clusters state to the database.'
+    requires_model_validation = True
+    option_list = CeleryCommand.option_list + camera.get_options()
 
     def handle(self, *args, **options):
-        """Handle the management command."""
         options["camera"] = "djcelery.snapshot.Camera"
-        run_celeryev(*args, **options)
+        camera.run(*args, **options)
